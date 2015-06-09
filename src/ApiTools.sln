@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Cci.Extensions", "Microsoft.Cci.Extensions\Microsoft.Cci.Extensions.csproj", "{2179F9B5-1DBA-4563-9402-A94DE75EA9FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Fx.CommandLine", "Microsoft.Fx.CommandLine\Microsoft.Fx.CommandLine.csproj", "{C86A8263-22A1-4CA7-B2F3-AEF35857D705}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".NETCore", ".NETCore", "{5FC28D58-88BA-4E02-84B9-616BA6B41C2A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Desktop", "Desktop", "{CBA8C879-BA15-45E4-90CB-59C4E844C6A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Fx.CommandLine.Desktop", "Microsoft.Fx.CommandLine\Microsoft.Fx.CommandLine.Desktop.csproj", "{4F020961-E50F-4716-B9FD-0C5F5DD10DE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Cci.Extensions.Desktop", "Microsoft.Cci.Extensions\Microsoft.Cci.Extensions.Desktop.csproj", "{170F1695-7F84-4F6C-B1F0-5056ED53D1A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenFacades", "GenFacades\GenFacades.csproj", "{A278F13C-6380-4F2B-91F9-EB3D80A8FC62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenFacades.Desktop", "GenFacades\GenFacades.Desktop.csproj", "{4EC6ECEB-EAE7-470F-BCDE-B44525856CC9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2179F9B5-1DBA-4563-9402-A94DE75EA9FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2179F9B5-1DBA-4563-9402-A94DE75EA9FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2179F9B5-1DBA-4563-9402-A94DE75EA9FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2179F9B5-1DBA-4563-9402-A94DE75EA9FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C86A8263-22A1-4CA7-B2F3-AEF35857D705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C86A8263-22A1-4CA7-B2F3-AEF35857D705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C86A8263-22A1-4CA7-B2F3-AEF35857D705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C86A8263-22A1-4CA7-B2F3-AEF35857D705}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F020961-E50F-4716-B9FD-0C5F5DD10DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F020961-E50F-4716-B9FD-0C5F5DD10DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F020961-E50F-4716-B9FD-0C5F5DD10DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F020961-E50F-4716-B9FD-0C5F5DD10DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{170F1695-7F84-4F6C-B1F0-5056ED53D1A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{170F1695-7F84-4F6C-B1F0-5056ED53D1A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{170F1695-7F84-4F6C-B1F0-5056ED53D1A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{170F1695-7F84-4F6C-B1F0-5056ED53D1A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A278F13C-6380-4F2B-91F9-EB3D80A8FC62}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{A278F13C-6380-4F2B-91F9-EB3D80A8FC62}.Release|Any CPU.ActiveCfg = Release|x64
+		{4EC6ECEB-EAE7-470F-BCDE-B44525856CC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EC6ECEB-EAE7-470F-BCDE-B44525856CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EC6ECEB-EAE7-470F-BCDE-B44525856CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EC6ECEB-EAE7-470F-BCDE-B44525856CC9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2179F9B5-1DBA-4563-9402-A94DE75EA9FA} = {5FC28D58-88BA-4E02-84B9-616BA6B41C2A}
+		{C86A8263-22A1-4CA7-B2F3-AEF35857D705} = {5FC28D58-88BA-4E02-84B9-616BA6B41C2A}
+		{4F020961-E50F-4716-B9FD-0C5F5DD10DE1} = {CBA8C879-BA15-45E4-90CB-59C4E844C6A8}
+		{170F1695-7F84-4F6C-B1F0-5056ED53D1A9} = {CBA8C879-BA15-45E4-90CB-59C4E844C6A8}
+		{A278F13C-6380-4F2B-91F9-EB3D80A8FC62} = {5FC28D58-88BA-4E02-84B9-616BA6B41C2A}
+		{4EC6ECEB-EAE7-470F-BCDE-B44525856CC9} = {CBA8C879-BA15-45E4-90CB-59C4E844C6A8}
+	EndGlobalSection
+EndGlobal
