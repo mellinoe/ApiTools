@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+  <metadata minClientVersion="2.8.1">
+    <id>ApiCompat.Desktop-Win7-x64</id>
+    <version>1.0.0-experimental</version> 
+    <title>ApiCompat.Desktop</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <description>This package provides the desktop version of the ApiCompat tool, used for verifying the consistency and correctness of contracts and facades.</description>
+    <summary>Provides the ApiCompat build tool</summary>
+    <copyright>Copyright © Microsoft Corporation</copyright>
+    <tags>BCL ApiCompat buildtools</tags>
+  </metadata>
+  <files>
+    <file src="..\..\bin\Windows_NT.AnyCPU.Debug\ApiCompat.Desktop\*.dll" target="tools" />
+    <file src="..\..\bin\Windows_NT.AnyCPU.Debug\ApiCompat.Desktop\*.exe" target="tools" />
+  </files>
+</package>
