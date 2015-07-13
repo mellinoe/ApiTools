@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if COREFX
+using System.Composition;
+#else
 using System.ComponentModel.Composition;
+#endif
 
 namespace Microsoft.Cci.Differs
 {

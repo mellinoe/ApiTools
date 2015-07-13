@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 namespace Microsoft.Fx.CommandLine
@@ -15,7 +14,10 @@ namespace Microsoft.Fx.CommandLine
         private static TraceListener[] _listeners = new TraceListener[]
         {
             new ConsoleTraceListener  { Filter = new EventTypeFilter(SourceLevels.Error | SourceLevels.Warning) },
+
+#if !COREFX // Environment.ExitCode not supported in .NET Core
             new ExitCodeTraceListener { Filter = new EventTypeFilter(SourceLevels.Error) },
+#endif
         };
 
         public static void Enable()
@@ -37,6 +39,7 @@ namespace Microsoft.Fx.CommandLine
             }
         }
 
+#if !COREFX
         private sealed class ExitCodeTraceListener : TraceListener
         {
             public override void Write(string message)
@@ -49,6 +52,6 @@ namespace Microsoft.Fx.CommandLine
                 Write(message);
             }
         }
-
+#endif
     }
 }

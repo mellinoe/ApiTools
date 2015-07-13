@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+#if COREFX
+using System.Composition;
+#else
 using System.ComponentModel.Composition;
+#endif
 using System.Linq;
 using Microsoft.Cci.Writers;
 using Microsoft.Cci.Writers.Syntax;
@@ -13,7 +17,11 @@ namespace Microsoft.Cci.Differs.Rules
     public class TokenListDiffer : DifferenceRule
     {
         [Import(AllowDefault = true)]
+#if COREFX
+        private IDiffingService _diffingService { get; set; }
+#else
         private IDiffingService _diffingService = null;
+#endif
         private CSDeclarationHelper _declHelper = null;
 
         public override DifferenceType Diff(IDifferences differences, ITypeDefinitionMember item1, ITypeDefinitionMember item2)

@@ -80,11 +80,11 @@ namespace GenFacades
             //The documentation says that if they're not that format the behavior is undefined.
             Version fileVersion;
             if (!Version.TryParse(this.fileVersionContents, out fileVersion))
-                fileVersion = new Version();
+                fileVersion = new Version(0, 0);
 
             Version productVersion;
             if (!Version.TryParse(this.productVersionContents, out productVersion))
-                productVersion = new Version();
+                productVersion = new Version(0, 0);
 
             writer.Write((DWORD)0xFEEF04BD);
             writer.Write((DWORD)0x00010000);

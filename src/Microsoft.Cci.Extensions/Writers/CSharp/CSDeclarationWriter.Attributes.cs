@@ -70,15 +70,31 @@ namespace Microsoft.Cci.Writers.CSharp
         {
             System.Runtime.CompilerServices.MethodImplOptions options = default(System.Runtime.CompilerServices.MethodImplOptions);
             if (method.IsUnmanaged)
+#if COREFX
+                options |= System.Runtime.CompilerServices.MethodImplOptionsEx.Unmanaged;
+#else
                 options |= System.Runtime.CompilerServices.MethodImplOptions.Unmanaged;
+#endif
             if (method.IsForwardReference)
+#if COREFX
+                options |= System.Runtime.CompilerServices.MethodImplOptionsEx.ForwardRef;
+#else
                 options |= System.Runtime.CompilerServices.MethodImplOptions.ForwardRef;
+#endif
             if (method.PreserveSignature)
                 options |= System.Runtime.CompilerServices.MethodImplOptions.PreserveSig;
             if (method.IsRuntimeInternal)
+#if COREFX
+                options |= System.Runtime.CompilerServices.MethodImplOptionsEx.InternalCall;
+#else
                 options |= System.Runtime.CompilerServices.MethodImplOptions.InternalCall;
+#endif
             if (method.IsSynchronized)
+#if COREFX
+                options |= System.Runtime.CompilerServices.MethodImplOptionsEx.Synchronized;
+#else
                 options |= System.Runtime.CompilerServices.MethodImplOptions.Synchronized;
+#endif
             if (method.IsNeverInlined)
                 options |= System.Runtime.CompilerServices.MethodImplOptions.NoInlining;
             if (method.IsAggressivelyInlined)
@@ -346,7 +362,11 @@ namespace Microsoft.Cci.Writers.CSharp
                 case '\'': return inString ? "'" : @"\'";
                 case '"': return inString ? "\\\"" : "\"";
             }
+#if COREFX
+            var cat = CharUnicodeInfo.GetUnicodeCategory(c);
+#else
             var cat = Char.GetUnicodeCategory(c);
+#endif
             if (cat == UnicodeCategory.Control ||
               cat == UnicodeCategory.LineSeparator ||
               cat == UnicodeCategory.Format ||

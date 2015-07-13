@@ -11,11 +11,11 @@ using Microsoft.Fx.CommandLine;
 
 namespace GenFacades
 {
-    internal class Program
+    public class Program
     {
         private const uint ReferenceAssemblyFlag = 0x70;
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             string seeds = null;
             string contracts = null;
@@ -31,7 +31,13 @@ namespace GenFacades
             bool forceZeroVersionSeeds = false;
             string partialFacadeAssemblyPath = null;
 
-            CommandLineParser.ParseForConsoleApplication((parser) =>
+#if COREFX
+            string commandLine = "GenFacades.exe " + string.Join(" ", args); // CommandLine parser assumes first arg is exe name.
+#else
+            string commandLine = Environment.CommandLine;
+#endif
+
+            bool parsingSucceeded = CommandLineParser.ParseForConsoleApplication((parser) =>
             {
                 parser.DefineQualifier("facadePath", ref facadePath, "Path to output the facades.");
                 parser.DefineQualifier("seeds", ref seeds, "Path to the seed assemblies. Can contain multiple assemblies or directories delimited by ',' or ';'.");
@@ -46,7 +52,12 @@ namespace GenFacades
                 parser.DefineOptionalQualifier("preferSeedType", ref seedTypePreferencesUnsplit, "Set which seed assembly to choose for a given type when it is defined in more than one assembly. Format: FullTypeName=PreferredSeedAssemblyName");
                 parser.DefineOptionalQualifier("forceZeroVersionSeeds", ref forceZeroVersionSeeds, "Forces all seed assembly versions to 0.0.0.0, regardless of their true version.");
                 parser.DefineOptionalQualifier("partialFacadeAssemblyPath", ref partialFacadeAssemblyPath, "Specifies the path to a single partial facade assembly, into which appropriate type forwards will be added to satisfy the given contract. If this option is specified, only a single partial assembly and a single contract may be given.");
-            });
+            }, commandLine);
+
+            if (!parsingSucceeded)
+            {
+                return;
+            }
 
             CommandLineTraceHandler.Enable();
 
@@ -105,19 +116,27 @@ namespace GenFacades
 
                         IAssembly contractAssembly = contractAssemblies.First();
                         IAssembly partialFacadeAssembly = seedHost.LoadAssembly(partialFacadeAssemblyPath);
-                        //if (contractAssembly.Name != partialFacadeAssembly.Name 
-                        //    || contractAssembly.Version != partialFacadeAssembly.Version
-                        //    || contractAssembly.GetPublicKeyToken() != partialFacadeAssembly.GetPublicKeyToken())
-                        //{
-                        //    throw new FacadeGenerationException(
-                        //        string.Format("The partial facade assembly's name, version, and public key token must exactly match the contract to be filled. Contract: {0}, Facade: {1}", 
-                        //            contractAssembly.AssemblyIdentity,
-                        //            partialFacadeAssembly.AssemblyIdentity));
-                        //}
+                        if (contractAssembly.Name != partialFacadeAssembly.Name 
+                            || contractAssembly.Version != partialFacadeAssembly.Version
+                            || contractAssembly.GetPublicKeyToken() != partialFacadeAssembly.GetPublicKeyToken())
+                        {
+                            throw new FacadeGenerationException(
+                                string.Format("The partial facade assembly's name, version, and public key token must exactly match the contract to be filled. Contract: {0}, Facade: {1}", 
+                                    contractAssembly.AssemblyIdentity,
+                                    partialFacadeAssembly.AssemblyIdentity));
+                        }
 
                         Assembly filledPartialFacade = facadeGenerator.GenerateFacade(contractAssembly, seedCoreAssemblyRef, ignoreMissingTypes, overrideContractAssembly:partialFacadeAssembly);
-                        string pdbFolder = Path.GetDirectoryName(partialFacadeAssemblyPath);
-                        string pdbLocation = Path.Combine(pdbFolder, contractAssembly.Name + ".pdb");
+
+                        string pdbLocation = null;
+#if !COREFX
+                        // PDB's only supported on Windows.
+                        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                        {
+                            string pdbFolder = Path.GetDirectoryName(partialFacadeAssemblyPath);
+                            pdbLocation = Path.Combine(pdbFolder, contractAssembly.Name + ".pdb");
+                        }
+#endif
                         OutputFacadeToFile(facadePath, seedHost, filledPartialFacade, contractAssembly, pdbLocation);
                     }
                     else
@@ -127,7 +146,9 @@ namespace GenFacades
                             Assembly facade = facadeGenerator.GenerateFacade(contract, seedCoreAssemblyRef, ignoreMissingTypes);
                             if (facade == null)
                             {
+#if !COREFX
                                 Debug.Assert(Environment.ExitCode != 0);
+#endif
                                 continue;
                             }
 
@@ -139,7 +160,9 @@ namespace GenFacades
             catch (FacadeGenerationException ex)
             {
                 Trace.TraceError(ex.Message);
+#if !COREFX
                 Debug.Assert(Environment.ExitCode != 0);
+#endif
             }
         }
 

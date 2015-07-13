@@ -6,6 +6,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.IO;
 
+using System.Reflection;
+
 namespace Microsoft.Fx.CommandLine
 {
     // See code:#Overview to get started.
@@ -299,9 +301,9 @@ class CommandLine
         /// <param name="parseBody">parseBody is the body of the parsing that this outer shell does not provide.
         /// in this delegate, you should be defining all the command line parameters using calls to Define* methods.
         ///  </param>
-        public static void ParseForConsoleApplication(Action<CommandLineParser> parseBody)
+        public static bool ParseForConsoleApplication(Action<CommandLineParser> parseBody, string commandLine)
         {
-            Parse(parseBody, parser =>
+            return Parse(parseBody, parser =>
             {
                 var parameterSetTofocusOn = parser.HelpRequested;
                 if (parameterSetTofocusOn.Length == 0)
@@ -309,22 +311,21 @@ class CommandLine
                     parameterSetTofocusOn = null;
                 }
 
-                string helpString = parser.GetHelp(Console.WindowWidth - 1, parameterSetTofocusOn, true);
+                string helpString = parser.GetHelp(GetConsoleWidth() - 1, parameterSetTofocusOn, true);
                 DisplayStringToConsole(helpString);
-                Environment.Exit(0);
 
             }, (parser, ex) =>
             {
                 Console.WriteLine("Error: " + ex.Message);
                 Console.WriteLine("Use -? for help.");
-                Environment.Exit(1);
-            });
+            },
+            commandLine);
         }
 
-        public static void Parse(Action<CommandLineParser> parseBody, Action<CommandLineParser> helpHandler, Action<CommandLineParser, Exception> errorHandler)
+        public static bool Parse(Action<CommandLineParser> parseBody, Action<CommandLineParser> helpHandler, Action<CommandLineParser, Exception> errorHandler, string commandLine)
         {
             var help = false;
-            CommandLineParser parser = new CommandLineParser(Environment.CommandLine);
+            CommandLineParser parser = new CommandLineParser(commandLine);
             parser.DefineOptionalQualifier("?", ref help, "Print this help guide.");
 
             try
@@ -334,17 +335,20 @@ class CommandLine
                 {
                     parser.skipParameterSets = true;
                     parser.skipDefinitions = true;
-                } 
+                }
                 parseBody(parser);
                 if (parser.HelpRequested != null)
                 {
                     helpHandler(parser);
+                    return false;
                 }
                 parser.CompleteValidation();
+                return true;
             }
             catch (CommandLineParserException e)
             {
                 errorHandler(parser, e);
+                return false;
             }
         }
 
@@ -509,7 +513,7 @@ class CommandLine
                     ThrowIfNotFirst("NoDashOnParameterSets");
                 noDashOnParameterSets = value;
             }
-        } 
+        }
         /// <summary>
         /// By default, the syntax (-Qualifier:Value) and (-Qualifer Value) are both allowed.   However
         /// this makes it impossible to use -Qualifier to specify that a qualifier is present but uses
@@ -580,7 +584,9 @@ class CommandLine
         }
 
         // These routines are typically are not needed because ParseArgsForConsoleApp does the work.  
+#if !COREFX
         public CommandLineParser() : this(Environment.CommandLine) { }
+#endif
         public CommandLineParser(string commandLine)
         {
             ParseWords(commandLine);
@@ -679,7 +685,13 @@ class CommandLine
             StringBuilder sb = new StringBuilder();
 
             // Create the 'Usage' line;
+            // TODO: Find a better way to obtain this information.
+#if COREFX
+            string appName = "<AppName>";
+
+#else
             string appName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().ManifestModule.Name);
+#endif
             sb.Append("Usage: ").Append(appName);
             if (parameterSetName.Length > 0)
             {
@@ -692,7 +704,8 @@ class CommandLine
             for (int i = parameterSetBody; i < parameterDescriptions.Count; i++)
             {
                 CommandLineParameter parameter = parameterDescriptions[i];
-                if (parameter.IsParameterSet) break;
+                if (parameter.IsParameterSet)
+                    break;
 
                 if (parameter.IsPositional)
                 {
@@ -718,7 +731,8 @@ class CommandLine
                 for (int i = parameterSetBody; i < parameterDescriptions.Count; i++)
                 {
                     CommandLineParameter parameter = parameterDescriptions[i];
-                    if (parameter.IsParameterSet) break;
+                    if (parameter.IsParameterSet)
+                        break;
                     if (parameter.IsPositional)
                         ParameterHelp(parameter, sb, QualifierSyntaxWidth, maxLineWidth);
                 }
@@ -734,7 +748,8 @@ class CommandLine
                 for (int i = parameterSetBody; i < parameterDescriptions.Count; i++)
                 {
                     CommandLineParameter parameter = parameterDescriptions[i];
-                    if (parameter.IsParameterSet) break;
+                    if (parameter.IsParameterSet)
+                        break;
                     if (parameter.IsNamed)
                         ParameterHelp(parameter, sb, QualifierSyntaxWidth, maxLineWidth);
                 }
@@ -753,7 +768,7 @@ class CommandLine
             set { helpRequestedFor = value; mustParseHelpStrings = true; }
         }
 
-        
+
         #region private
         /// <summary>
         /// CommandLineParameter contains the 'full' information for a parameter or qualifier used for generating help.
@@ -789,7 +804,7 @@ class CommandLine
                     Type displayType = Type;
                     if (displayType.IsArray)
                         displayType = displayType.GetElementType();
-                    if (displayType.IsGenericType && displayType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    if (displayType.GetTypeInfo().IsGenericType && displayType.GetGenericTypeDefinition() == typeof(Nullable<>))
                         displayType = displayType.GetGenericArguments()[0];
 
                     bool shouldPrint = true;
@@ -902,7 +917,7 @@ class CommandLine
             // TODO review this carefully.
             args = new List<string>();
             int wordStartIndex = -1;
-            bool hasExcapedQuotes = false; 
+            bool hasExcapedQuotes = false;
             bool isResponseFile = false;
             int numQuotes = 0;
 
@@ -1402,7 +1417,7 @@ class CommandLine
                     else
                         return int.Parse(valueString);
                 }
-                else if (type.IsEnum)
+                else if (type.GetTypeInfo().IsEnum)
                     return ParseCompositeEnumValue(valueString, type, parameterName);
                 else if (type == typeof(string[]))
                     return valueString.Split(',');
@@ -1416,7 +1431,7 @@ class CommandLine
                         array.SetValue(ParseValue(elementStrings[i], elementType, parameterName), i);
                     return array;
                 }
-                else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                else if (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     if (valueString.Length == 0)
                         return null;
@@ -1471,7 +1486,7 @@ class CommandLine
 
                 if (!knownToBeFlagsEnum)
                 {
-                    if (Attribute.GetCustomAttribute(type, typeof(FlagsAttribute)) == null)
+                    if (!type.GetTypeInfo().IsDefined(typeof(FlagsAttribute)))
                     {
                         string paramStr = String.Empty;
                         if (parameterName != null)
@@ -1521,13 +1536,13 @@ class CommandLine
                 foreach (string name in Enum.GetNames(type))
                     sb.Append("    ").Append(name).AppendLine();
 
-                if (Attribute.GetCustomAttribute(type, typeof(FlagsAttribute)) != null)
+                if (type.GetTypeInfo().IsDefined( typeof(FlagsAttribute)))
                     sb.Append("The + and - operators can be used to combine the values.").AppendLine();
                 throw new CommandLineParserException(sb.ToString());
             }
         }
 
-        
+
         /// <summary>
         /// Return a string giving the help for the command, word wrapped at 'maxLineWidth' 
         /// </summary>
@@ -1545,7 +1560,10 @@ class CommandLine
 
 
             string appName = String.Empty;
-            var entryAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+            Assembly entryAssembly = null;
+#if !COREFX
+            entryAssembly = System.Reflection.Assembly.GetExecutingAssembly();
+#endif
             if (entryAssembly != null)
                 appName = Path.GetFileNameWithoutExtension(entryAssembly.ManifestModule.Name);
             string intro = "The " + appName + " application has a number of commands associated with it, " +
@@ -1592,7 +1610,7 @@ class CommandLine
             for (int pos = 0; ; )
             {
                 int nextPos = pos;
-                int numLines = (first ? Console.WindowHeight - 2 : Console.WindowHeight * 3 / 4) - 1;
+                int numLines = (first ? GetConsoleHeight() - 2 : GetConsoleHeight() * 3 / 4) - 1;
                 first = false;
                 for (int j = 0; j < numLines; j++)
                 {
@@ -1607,7 +1625,7 @@ class CommandLine
                 if (nextPos == helpString.Length)
                     break;
                 Console.Write("[Press space to continue...]");
-                Console.ReadKey();
+                Console.Read();
                 Console.Write("\r                               \r");
                 pos = nextPos;
             }
@@ -1685,11 +1703,30 @@ class CommandLine
             for (int i = 0; i < parameterDescriptions.Count; i++)
             {
                 CommandLineParameter parameter = parameterDescriptions[i];
-                if (parameter.IsParameterSet) break;
+                if (parameter.IsParameterSet)
+                    break;
                 if (parameter.IsNamed)
                     ParameterHelp(parameter, sb, QualifierSyntaxWidth, maxLineWidth);
             }
             return sb.ToString();
+        }
+
+        private static int GetConsoleWidth()
+        {
+#if COREFX
+            return 120; // Can't retrieve console width in .NET Core
+#else
+            return Console.WindowWidth;
+#endif
+        }
+
+        private static int GetConsoleHeight()
+        {
+#if COREFX
+            return 40;
+#else
+            return Console.WindowHeight;
+#endif
         }
 
         // TODO expose the ability to change this?
@@ -1743,7 +1780,7 @@ class CommandLine
         private static int SetMulitple(int encodedPos) { return encodedPos | MultiplePositions; }
         private static int GetPosition(int encodedPos) { return encodedPos & ~MultiplePositions; }
         private static bool IsMulitple(int encodedPos) { return (encodedPos & MultiplePositions) != 0; }
-   
+
         // As we parse qualifiers we remove them from the command line by nulling them out, and thus
         // ultimately ends up only having positional parameters being non-null.    
         private List<string> args;
@@ -1768,7 +1805,7 @@ class CommandLine
     /// Run time parsing error throw this exception.   These are expected to be caught and the error message
     /// printed out to the user.   Thus the messages should be 'user friendly'.  
     /// </summary>
-    public class CommandLineParserException : ApplicationException
+    public class CommandLineParserException : Exception
     {
         public CommandLineParserException(string message) : base(message) { }
     }

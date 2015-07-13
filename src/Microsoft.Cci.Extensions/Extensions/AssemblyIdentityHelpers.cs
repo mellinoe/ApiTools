@@ -10,10 +10,14 @@ namespace Microsoft.Cci.Extensions
         {
             var name = new System.Reflection.AssemblyName();
             name.Name = assemblyIdentity.Name.Value;
+#if !COREFX
             name.CultureInfo = new CultureInfo(assemblyIdentity.Culture);
+#endif
             name.Version = assemblyIdentity.Version;
             name.SetPublicKeyToken(assemblyIdentity.PublicKeyToken.ToArray());
+#if !COREFX
             name.CodeBase = assemblyIdentity.Location;
+#endif
             return name.ToString();
         }
 
@@ -21,10 +25,18 @@ namespace Microsoft.Cci.Extensions
         {
             var name = new System.Reflection.AssemblyName(formattedName);
             return new AssemblyIdentity(nameTable.GetNameFor(name.Name),
+#if COREFX
+                                        name.CultureName,
+#else
                                         name.CultureInfo.Name,
+#endif
                                         name.Version,
                                         name.GetPublicKeyToken(),
+#if COREFX
+                                        "");
+#else
                                         name.CodeBase);
+#endif
         }
     }
 }
