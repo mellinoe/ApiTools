@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
-    <RuntimePath>$(OutputPath)</RuntimePath>
-  </PropertyGroup>
-
   <Target Name="PublishFilesToRuntime" AfterTargets="CopyFilesToOutputDirectory"
           Condition="'$(OutputType)' == 'Exe' and '$(TargetFrameworkIdentifier)' == '.NETPortable'">
 
@@ -27,22 +23,22 @@
       </PublishedRuntimeItems>
     </ItemGroup>
 
-    <Copy SourceFiles="%(PublishedRuntimeItems.Identity)" DestinationFiles="$(RuntimePath)%(DestinationRelativePath)" SkipUnchangedFiles="true" />
-    <CallTarget Targets="FixUpCoreConsoleNames" Condition="Exists('$(RuntimePath)CoreConsole.exe')" />
+    <Copy SourceFiles="%(PublishedRuntimeItems.Identity)" DestinationFiles="$(Outdir)%(DestinationRelativePath)" SkipUnchangedFiles="true" />
+    <CallTarget Targets="FixUpCoreConsoleNames" Condition="Exists('$(Outdir)CoreConsole.exe')" />
 
-    <Message Text="Published $(AssemblyName) executable to $(RuntimePath) [@(PublishedRuntimeItems->Count()) items]" Importance="high" />
+    <Message Text="Published $(AssemblyName) executable to $(Outdir) [@(PublishedRuntimeItems->Count()) items]" Importance="high" />
 
     <PropertyGroup>
       <LaunchExeLines1>@echo off</LaunchExeLines1>
-      <LaunchExeLines2>%~dp0_LaunchExe.cmd $(AssemblyName) $(RuntimePath) %*</LaunchExeLines2>
+      <LaunchExeLines2>%~dp0_LaunchExe.cmd $(AssemblyName) $(Outdir) %*</LaunchExeLines2>
     </PropertyGroup>
     <WriteLinesToFile File="$(ProjectDir)Launch-$(AssemblyName).cmd" Lines="$(LaunchExeLines1);$(LaunchExeLines2)" Overwrite="true" />
   </Target>
 
   <!-- If CoreConsole.exe is being used, rename it and the actual project's exe to their correct names -->
   <Target Name="FixUpCoreConsoleNames">
-    <Move SourceFiles="$(RuntimePath)$(AssemblyName).exe" DestinationFiles="$(RuntimePath)$(AssemblyName).dll" />
-    <Move SourceFiles="$(RuntimePath)CoreConsole.exe" DestinationFiles="$(RuntimePath)$(AssemblyName).exe" />
+    <Move SourceFiles="$(Outdir)$(AssemblyName).exe" DestinationFiles="$(Outdir)$(AssemblyName).dll" />
+    <Move SourceFiles="$(Outdir)CoreConsole.exe" DestinationFiles="$(Outdir)$(AssemblyName).exe" />
   </Target>
 
 </Project>
