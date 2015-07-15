@@ -129,14 +129,18 @@ namespace GenFacades
                         Assembly filledPartialFacade = facadeGenerator.GenerateFacade(contractAssembly, seedCoreAssemblyRef, ignoreMissingTypes, overrideContractAssembly:partialFacadeAssembly);
 
                         string pdbLocation = null;
-#if !COREFX
-                        // PDB's only supported on Windows.
-                        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+
+                        string pdbFolder = Path.GetDirectoryName(partialFacadeAssemblyPath);
+                        pdbLocation = Path.Combine(pdbFolder, contractAssembly.Name + ".pdb");
+                        if (!File.Exists(pdbLocation))
                         {
-                            string pdbFolder = Path.GetDirectoryName(partialFacadeAssemblyPath);
-                            pdbLocation = Path.Combine(pdbFolder, contractAssembly.Name + ".pdb");
+                            pdbLocation = null;
                         }
-#endif
+                        else
+                        {
+                            Trace.TraceWarning("No PDB file present for un-transformed partial facade. No PDB will be generated.");
+                        }
+
                         OutputFacadeToFile(facadePath, seedHost, filledPartialFacade, contractAssembly, pdbLocation);
                     }
                     else
