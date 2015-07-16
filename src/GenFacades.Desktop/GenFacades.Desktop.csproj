@@ -12,9 +12,8 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ResolveNuGetPackages>false</ResolveNuGetPackages>
-    <RestorePackages>false</RestorePackages>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <GenFacadesSrc>..\GenFacades</GenFacadesSrc>
   </PropertyGroup>
 
     <!-- Default configurations to help VS understand the configurations -->
@@ -22,9 +21,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
 
   <ItemGroup>
-    <Compile Include="FacadeGenerationException.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="VersionResourceSerializer.cs" />
+    <Compile Include="$(GenFacadesSrc)\FacadeGenerationException.cs" />
+    <Compile Include="$(GenFacadesSrc)\Program.cs" />
+    <Compile Include="$(GenFacadesSrc)\VersionResourceSerializer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,9 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(ProjectDir)refs\Microsoft.Cci.Desktop\Microsoft.Cci.dll" />
-    <ProjectReference Include="..\Microsoft.CCI.Extensions\Microsoft.CCI.Extensions.Desktop.csproj" />
-    <ProjectReference Include="..\Microsoft.Fx.CommandLine\Microsoft.Fx.CommandLine.Desktop.csproj" />
+    <ProjectReference Include="..\Microsoft.CCI.Extensions\Microsoft.CCI.Extensions.csproj" />
+    <ProjectReference Include="..\Microsoft.Fx.CommandLine\Microsoft.Fx.CommandLine.csproj" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

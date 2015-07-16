@@ -135,9 +135,6 @@ namespace GenFacades
                         if (!File.Exists(pdbLocation))
                         {
                             pdbLocation = null;
-                        }
-                        else
-                        {
                             Trace.TraceWarning("No PDB file present for un-transformed partial facade. No PDB will be generated.");
                         }
 

@@ -2,20 +2,15 @@
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Target Name="PublishFilesToRuntime" AfterTargets="CopyFilesToOutputDirectory"
-          Condition="'$(OutputType)' == 'Exe' and '$(TargetFrameworkIdentifier)' == '.NETPortable'">
+          Condition="'$(OutputType)' == 'Exe' ">
 
     <ItemGroup>
-      <PublishedRuntimeItems Include="@(Reference)"
-                             Condition="'%(Reference.NuGetPackageName)' == ''">
-        <DestinationRelativePath>%(FileName)%(Extension)</DestinationRelativePath>
-      </PublishedRuntimeItems>
-
       <PublishedRuntimeItems Include="@(ReferenceCopyLocalPaths)">
         <DestinationRelativePath>%(FileName)%(Extension)</DestinationRelativePath>
       </PublishedRuntimeItems>
 
       <PublishedRuntimeItems Include="@(Content)">
-        <DestinationRelativePath>%(Identity)</DestinationRelativePath>
+        <DestinationRelativePath>%(FileName)%(Extension)</DestinationRelativePath>
       </PublishedRuntimeItems>
 
       <PublishedRuntimeItems Include="@(None)">

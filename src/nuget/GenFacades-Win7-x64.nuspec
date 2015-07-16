@@ -12,7 +12,7 @@
     <tags>BCL GenFacades buildtools</tags>
   </metadata>
   <files>
-    <file src="..\..\bin\Windows_NT.AnyCPU.Debug\GenFacades\*.dll" target="tools" />
-    <file src="..\..\bin\Windows_NT.AnyCPU.Debug\GenFacades\*.exe" target="tools" />
+    <file src="GenFacades\*.dll" target="tools" />
+    <file src="GenFacades\*.exe" target="tools" />
   </files>
 </package>

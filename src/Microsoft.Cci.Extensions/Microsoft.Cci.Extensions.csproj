@@ -19,9 +19,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <ItemGroup>
-    <Reference Include="$(ProjectDir)refs\Microsoft.Cci\Microsoft.Cci.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Comparers\ApiComparer.cs" />
     <Compile Include="Dgml\DgmlExtensions.cs" />
     <Compile Include="Differs\DifferenceRule.cs" />

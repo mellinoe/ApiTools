@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="$(ProjectDir)refs\Microsoft.Cci\Microsoft.Cci.dll" />
     <ProjectReference Include="..\Microsoft.CCI.Extensions\Microsoft.CCI.Extensions.csproj" />
     <ProjectReference Include="..\Microsoft.Fx.CommandLine\Microsoft.Fx.CommandLine.csproj" />
   </ItemGroup>
